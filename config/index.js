@@ -2,7 +2,8 @@
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
 
-const path = require('path')
+const path = require('path'),
+    url = require('url');
 
 module.exports = {
   dev: {
@@ -10,7 +11,24 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+        '/dataweb': {
+            target: 'http://localhost:8888',
+            changeOrigin: true,
+            pathRewrite: function(path, req) {
+                var urlParsed = url.parse(req.url, true),
+                    query = urlParsed.query,
+                    pathname = urlParsed.pathname.replace(/\/*$/g,'');
+                pathname = pathname.substring(pathname.lastIndexOf('/'));
+                Object.keys(query).forEach((key) => {
+                    pathname += ('-' + key + query[key]);
+                });
+                pathname = '/static/json' + pathname + '.json';
+                console.log('proxy request ' + path + ' to ' + pathname);
+                return pathname;
+            }
+        }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
