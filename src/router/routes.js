@@ -2,7 +2,7 @@ export default [
     {
         name: '根目录',
         path: '/',
-        redirect: '/home',
+        redirect: '/register',
         hidden: true
     },
     {
@@ -16,5 +16,18 @@ export default [
                 resolve(require('../view/index'));
             });
         }
+    },
+    {
+        name: '注册',
+        path: '/register',
+        meta: {
+            requireAuth: true
+        },
+        component: resolve => {
+            require.ensure(['../view/register'], () => {
+                resolve(require('../view/register'));
+            });
+        }
+
     }
 ];
