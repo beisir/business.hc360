@@ -12,8 +12,8 @@ export default [
             requireAuth: true
         },
         component: resolve => {
-            require.ensure(['../components/index.vue'], () => {
-                resolve(require('../components/index.vue'));
+            require.ensure(['../view/index'], () => {
+                resolve(require('../view/index'));
             });
         }
     }
