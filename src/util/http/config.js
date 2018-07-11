@@ -1,5 +1,5 @@
 /**
- * @author: caoxu
+ * @author caoxu
  * addRequestInterceptor
  * addResponseInterceptor
  */
