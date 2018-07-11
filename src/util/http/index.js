@@ -32,7 +32,7 @@ addRequestInterceptor(
     }) // 开启加载loading
     return config
   }, error => {
-    // requestLoading.close()
+    requestLoading.close()
     return error
   }
 )
@@ -43,9 +43,9 @@ addRequestInterceptor(
 addResponseInterceptor(
   response => {
     requestLoading.close()
-    return response
+    return response.data
   }, error => {
-    // requestLoading.close()
+    requestLoading.close()
     return error
   }
 )

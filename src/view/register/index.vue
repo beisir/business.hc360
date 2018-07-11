@@ -209,10 +209,29 @@ export default {
             }, 1000);
         }
     },
-    created () {
-        this.http.get('https://www.easy-mock.com/mock/5b39baec73a49f4fe3433dd9/xcx/form').then((result) => {
-            console.log(result);
-        });
+    async created () {
+        try {
+
+        } catch (e) {
+
+        } finally {
+
+        }
+        let validimage = await this.http.get('http://10.158.33.230/validCode/refresCode');
+        console.log(validimage);
+        // this.http.get('http://10.158.33.230/validCode/refresCode').then(res => {
+        //     console.log(res);
+        // })
+
+        // this.http.get('http://10.158.33.188/sso/user/register', {
+        //     body: {
+        //         "phone": '13031115726',
+        //         "pwd": '5211314',
+        //         "username": 'beis'
+        //     }
+        // }).then((result) => {
+        //     console.log(result);
+        // });
     }
 };
 </script>
