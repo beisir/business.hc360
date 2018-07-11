@@ -6,6 +6,7 @@ import routerConfig from './router';
 import {Menu, Submenu, MenuItem, Steps, Step, Input, Form, Button, ButtonGroup, FormItem, Checkbox, CheckboxGroup} from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import '../static/iconfont/css/font-awesome.min.css';
+import store from './store'
 Vue.use(http);
 Vue.use(Menu);
 Vue.use(Submenu);
@@ -27,5 +28,6 @@ new Vue({
     el: '#app',
     router,
     components: { App },
-    template: '<App/>'
+    template: '<App/>',
+    store,
 });

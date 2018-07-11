@@ -15,13 +15,15 @@
         </el-submenu>
       </el-submenu>
       <el-menu-item index="3">消息中心</el-menu-item>
-      <el-menu-item index="4"><a href="" target="_blank">订单管理</a></el-menu-item>
+      <el-menu-item index="4"><a href="" target="_blank">{{userInfo.a}}</a></el-menu-item>
     </el-menu>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+import { GETUSERINFO } from '@/store/modules/user/actionsType'
 export default {
   data() {
     return {
@@ -30,17 +32,21 @@ export default {
     }
   },
   created() {
-    console.log(this.http);
-    this.http.get('https://wxlogistics.hc360.com/wxlogistics/smallpro/user/get/all/identity.html').then(res => {
-      console.log(res)
-    }).catch(err => {
-      console.log(err);
+    this.getUserInfo()
+    console.log(this.userInfo);
+  },
+  computed: {
+    ...mapState('user', {
+      userInfo: state => state.userInfo
     })
   },
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
-    }
+    },
+    ...mapActions('user', {
+      getUserInfo: GETUSERINFO
+    })
   }
 };
 </script>
