@@ -18,18 +18,19 @@
                     label-position="right"
                     :model="ruleForm"
                     :rules="rules"
+                    :validate-on-rule-change="false"
                     label-width="130px">
                     <el-form-item label="手机号码" prop="phone">
                         <el-input v-model="ruleForm.phone"></el-input>
                     </el-form-item>
                     <el-form-item label="验证码" prop="valid">
                         <el-input class="valid-code" v-model="ruleForm.valid"></el-input>
-                        <div class="valid-img"><img src="http://reg.hc360.com/reg/code/validimage.html?type=new" /></div>
-                        <a class="valid-next" href="javascript:;">看不清楚，换一张</a>
+                        <div class="valid-img"><img :src="'http://10.158.33.230/validCode/validimage?valid=' + refresCode" /></div>
+                        <a class="valid-next" href="javascript:;" @click="reflshImg">看不清楚，换一张</a>
                     </el-form-item>
                     <el-form-item label="短信验证码" prop="message">
                         <el-input class="valid-messcode" v-model="ruleForm.message" type="text"></el-input>
-                        <el-button class="valid-message" type="info" :disabled="!(shortCode === '获取短信验证码')" @click="verifyingCode">{{shortCode}}</el-button>
+                        <el-button class="valid-message" type="info" :disabled="!shortStatus && (shortCode === '获取短信验证码')" @click="verifyingCode">{{shortCode}}</el-button>
                     </el-form-item>
                     <el-form-item label="确认阅读并接受" prop="type">
                         <div class="regRig">
@@ -50,7 +51,7 @@
                 <el-button class="valid-success" type="primary" @click="submitForm('ruleForm')">下一步</el-button>
             </div>
         </div>
-        <div class="" v-else-if="active === 2">
+        <div class="">
             <div class="register-center">
                 <el-form ref="ruleForm2"
                     :status-icon="true"
@@ -58,21 +59,21 @@
                     :model="ruleForm2"
                     :rules="rules2"
                     label-width="130px">
-                    <el-form-item label="用户名" prop="user">
-                        <el-input v-model.number="ruleForm2.user"></el-input>
+                    <el-form-item label="用户名" prop="username">
+                        <el-input v-model.number="ruleForm2.username"></el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="pass">
                         <el-input type="password" v-model="ruleForm2.pass"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="确认密码" prop="checkPass">
-                        <el-input type="password" v-model="ruleForm2.checkPass"></el-input>
+                    <el-form-item label="确认密码" prop="pwd">
+                        <el-input type="password" v-model="ruleForm2.pwd"></el-input>
                     </el-form-item>
                     <el-button class="valid-success" type="primary" @click="submitForm('ruleForm2')">下一步</el-button>
                 </el-form>
             </div>
         </div>
-        <div class="" v-else-if="active === 3">
+        <!-- <div class="" v-else-if="active === 3">
             <div class="register-center" style="text-align: center;">
                 <div class="open-icon">
                     <i class="el-icon-success"></i>
@@ -82,7 +83,7 @@
                     <router-link to="/home">进入会员中心</router-link>
                 </el-button>
             </div>
-        </div>
+        </div> -->
         <div class="regBottom">
             <ul class="regBottom-inner">
                 <li>
@@ -117,30 +118,15 @@
 </template>
 
 <script>
+import validtion from './validation.js';
 export default {
     data () {
-        let validatePass = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请输入密码'));
-            } else {
-                if (this.ruleForm2.checkPass !== '') {
-                    this.$refs.ruleForm2.validateField('checkPass');
-                };
-                callback();
-            }
-        };
-        let validatePass2 = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请再次输入密码'));
-            } else if (value !== this.ruleForm2.pass) {
-                callback(new Error('两次输入密码不一致!'));
-            } else {
-                callback();
-            };
-        };
+        let {validatePass, validatePass2, validatePhone, validCode, validMessage} = validtion(this);
         return {
+            refresCode: '',
             shortCode: '获取短信验证码',
-            active: 1,
+            shortStatus: false,
+            active: 2,
             checked: false,
             ruleForm: {
                 phone: '',  // 手机号
@@ -155,13 +141,16 @@ export default {
                         message: '手机号码格式不正确',
                         trigger: 'blur',
                         pattern: /^[1][3,4,5,7,8][0-9]{9}$/
-                    }
+                    },
+                    { validator: validatePhone, trigger: 'blur' },
                 ],
                 valid: [
-                    { required: true, message: '请输入图中结果', trigger: 'blur' }
+                    { required: true, message: '请输入图中结果', trigger: 'blur' },
+                    { validator: validCode, trigger: 'blur' },
                 ],
                 message: [
-                    { required: true, message: '请输入手机验证码', trigger: 'blur' }
+                    { required: true, message: '请输入手机验证码', trigger: 'blur' },
+                    { validator: validMessage, trigger: 'submit' }
                 ],
                 type: [
                     { required: true, message: '请勾选确认已阅读服务协议', trigger: 'change' }
@@ -170,17 +159,17 @@ export default {
 
             ruleForm2: {
                 pass: '',
-                checkPass: '',
-                user: ''
+                pwd: '',
+                username: ''
             },
             rules2: {
                 pass: [
                     { required: true, validator: validatePass, trigger: 'blur' }
                 ],
-                checkPass: [
+                pwd: [
                     { required: true, validator: validatePass2, trigger: 'blur' }
                 ],
-                user: [
+                username: [
                     { required: true, message: '请输入用户名', trigger: 'blur' }
                 ]
             }
@@ -189,15 +178,48 @@ export default {
     methods: {
         // 提交表单
         submitForm (formName) {
+            const _this = this;
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    let active = this.active;
-                    this.active = active + 1;
+                    _this.submitNext(_this.active);
+                } else {
+                    return false;
                 };
             });
         },
+        async submitNext (active) {
+            let result;
+            switch (active) {
+                case 1:
+                    let phone = this.ruleForm.phone;
+                    result = await this.http.get('http://10.158.33.188:81/user/regphone?phone=' + phone)
+                    break;
+                case 2:
+                    let ruleForm2 = this.ruleForm2;
+                        result = await this.http.post('http://10.158.33.188:81/user/register', {
+                            userInfo: JSON.stringify(ruleForm2)
+                        }, {
+                            headers: {
+                                'Content-type': 'application/x-www-form-urlencoded',
+                            }
+                        });
+                    break;
+            };
+            console.log(result);
+            if (result.success) {
+                this.active = active + 1;
+            };
+        },
+        async getSMS () {
+            this.sendSms = await this.http.get('http://10.158.33.188:81/user/sendSms?phone='+ this.ruleForm.phone);
+            console.log(this.sendSms);
+        },
+        async reflshImg () {
+            this.refresCode = await this.http.get('http://10.158.33.230/validCode/refresCode');
+        },
         verifyingCode () {
             let timeNum = 5;
+            this.getSMS();
             let timer = setInterval(() => {
                 timeNum --;
                 if (timeNum <= 0) {
@@ -211,14 +233,12 @@ export default {
     },
     async created () {
         try {
-
+            this.reflshImg();
+            // this.imgurl = await this.http.get('http://10.158.33.230/validCode/validimage');
+            // console.log(this.imgurl);
         } catch (e) {
-
-        } finally {
-
-        }
-        let validimage = await this.http.get('http://10.158.33.230/validCode/refresCode');
-        console.log(validimage);
+            console.log(e);
+        };
         // this.http.get('http://10.158.33.230/validCode/refresCode').then(res => {
         //     console.log(res);
         // })
