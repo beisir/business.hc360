@@ -1,20 +1,19 @@
-export default [
-    {
-        name: '根目录',
-        path: '/',
-        redirect: '/home',
-        hidden: true
+
+
+import index from '@/view/index'
+
+export default [{
+    name: 'base',
+    path: '/',
+    redirect: '/index',
+    hidden: true
+  },
+  {
+    name: 'index',
+    path: '/index',
+    meta: {
+      requireAuth: true
     },
-    {
-        name: '首页',
-        path: '/home',
-        meta: {
-            requireAuth: true
-        },
-        component: resolve => {
-            require.ensure(['../view/index'], () => {
-                resolve(require('../view/index'));
-            });
-        }
-    }
+    component: index
+  }
 ];

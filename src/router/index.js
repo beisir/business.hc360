@@ -1,4 +1,6 @@
-import routes from './routes.js';
+
+import routes from './routes';
+
 export default (Router) => {
     return new Router({
         mode: 'history',
