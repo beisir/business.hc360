@@ -2,7 +2,7 @@ export default [
     {
         name: '根目录',
         path: '/',
-        redirect: '/register',
+        redirect: '/home',
         hidden: true
     },
     {

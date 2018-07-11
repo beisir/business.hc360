@@ -11,45 +11,65 @@
             </el-steps>
         </div>
         <div class="" v-if="active === 1">
-            <div class="register-center">
-                <el-form label-position="right" ref="ruleForm" :model="ruleForm" :rules="rules" label-width="130px" class="demo-ruleForm">
+            <div class="register-center transition-box">
+                <el-form
+                    :status-icon="true"
+                    ref="ruleForm"
+                    label-position="right"
+                    :model="ruleForm"
+                    :rules="rules"
+                    label-width="130px">
                     <el-form-item label="手机号码" prop="phone">
                         <el-input v-model="ruleForm.phone"></el-input>
                     </el-form-item>
                     <el-form-item label="验证码" prop="valid">
-                        <el-input class="valid-code" v-model="ruleForm.valid" type="password"></el-input>
+                        <el-input class="valid-code" v-model="ruleForm.valid"></el-input>
                         <div class="valid-img"><img src="http://reg.hc360.com/reg/code/validimage.html?type=new" /></div>
                         <a class="valid-next" href="javascript:;">看不清楚，换一张</a>
                     </el-form-item>
                     <el-form-item label="短信验证码" prop="message">
                         <el-input class="valid-messcode" v-model="ruleForm.message" type="text"></el-input>
-                        <el-button class="valid-message" type="info" :disabled="false">获取短信验证码</el-button>
+                        <el-button class="valid-message" type="info" :disabled="!(shortCode === '获取短信验证码')" @click="verifyingCode">{{shortCode}}</el-button>
                     </el-form-item>
-                    <div class="regRig">
-                        <el-checkbox v-model="checked">您确认阅读并接受</el-checkbox>
-                        <a href="http://my.b2b.hc360.com/my/turbine/template/firstview,regtxt.html" target="_blank">《慧聪网会员注册协议》</a>
-                        <a href="https://www.hc360.com/law.htm" target="_blank">《慧聪网隐私政策条款》</a>
-                        <a href="http://info.kf.hc360.com/2014/11/1318391302.shtml" target="_blank">《慧聪网在线交易服务条款》</a>
-                        <a href="http://info.kf.hc360.com/2014/11/1318391301.shtml" target="_blank">《慧付宝服务协议》</a>
-                        <div class="promptBox promptBox_2">
-                            <div class="tips-errow" style="display:none;">请勾选确认已阅读服务协议</div>
+                    <el-form-item label="确认阅读并接受" prop="type">
+                        <div class="regRig">
+                            <el-checkbox-group v-model="ruleForm.type">
+                                <el-checkbox class="valid-checkbox" name="type"></el-checkbox>
+                                <a href="http://my.b2b.hc360.com/my/turbine/template/firstview,regtxt.html" target="_blank">《慧聪网会员注册协议》</a>
+                                <a href="https://www.hc360.com/law.htm" target="_blank">《慧聪网隐私政策条款》</a>
+                                <a href="http://info.kf.hc360.com/2014/11/1318391302.shtml" target="_blank">《慧聪网在线交易服务条款》</a>
+                                <a href="http://info.kf.hc360.com/2014/11/1318391301.shtml" target="_blank">《慧付宝服务协议》</a>
+                                <div class="promptBox promptBox_2">
+                                    <div class="tips-errow" style="display:none;">请勾选确认已阅读服务协议</div>
+                                </div>
+                            </el-checkbox-group>
+
                         </div>
-                    </div>
+                    </el-form-item>
                 </el-form>
                 <el-button class="valid-success" type="primary" @click="submitForm('ruleForm')">下一步</el-button>
             </div>
         </div>
         <div class="" v-else-if="active === 2">
             <div class="register-center">
-                <el-form label-position="right" label-width="130px" class="demo-ruleForm">
-                    <el-form-item label="会员名" prop="phone">
-                        <el-input v-model="ruleForm.phone"></el-input>
+                <el-form ref="ruleForm2"
+                    :status-icon="true"
+                    label-position="right"
+                    :model="ruleForm2"
+                    :rules="rules2"
+                    label-width="130px">
+                    <el-form-item label="用户名" prop="user">
+                        <el-input v-model.number="ruleForm2.user"></el-input>
                     </el-form-item>
-                    <el-form-item label="登录密码" prop="phone">
-                        <el-input v-model="ruleForm.phone" type="password"></el-input>
+                    <el-form-item label="密码" prop="pass">
+                        <el-input type="password" v-model="ruleForm2.pass"></el-input>
                     </el-form-item>
+
+                    <el-form-item label="确认密码" prop="checkPass">
+                        <el-input type="password" v-model="ruleForm2.checkPass"></el-input>
+                    </el-form-item>
+                    <el-button class="valid-success" type="primary" @click="submitForm('ruleForm2')">下一步</el-button>
                 </el-form>
-                <el-button class="valid-success" type="primary" @click="active=3">下一步</el-button>
             </div>
         </div>
         <div class="" v-else-if="active === 3">
@@ -58,7 +78,9 @@
                     <i class="el-icon-success"></i>
                 </div>
                 <p class="open-text">恭喜您，已经成功注册慧聪网</p>
-                <el-button class="open-button" type="primary" >进入会员中心</el-button>
+                <el-button class="open-button" type="primary" >
+                    <router-link to="/home">进入会员中心</router-link>
+                </el-button>
             </div>
         </div>
         <div class="regBottom">
@@ -97,13 +119,34 @@
 <script>
 export default {
     data () {
+        let validatePass = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入密码'));
+            } else {
+                if (this.ruleForm2.checkPass !== '') {
+                    this.$refs.ruleForm2.validateField('checkPass');
+                };
+                callback();
+            }
+        };
+        let validatePass2 = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.ruleForm2.pass) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            };
+        };
         return {
+            shortCode: '获取短信验证码',
             active: 1,
             checked: false,
             ruleForm: {
-                phone: '',
-                valid: '',
-                message: ''
+                phone: '',  // 手机号
+                valid: '', // 验证码
+                message: '', // 短信验证码
+                type: [] // 服务协议勾选框
             },
             rules: {
                 phone: [
@@ -119,40 +162,78 @@ export default {
                 ],
                 message: [
                     { required: true, message: '请输入手机验证码', trigger: 'blur' }
+                ],
+                type: [
+                    { required: true, message: '请勾选确认已阅读服务协议', trigger: 'change' }
+                ]
+            },
+
+            ruleForm2: {
+                pass: '',
+                checkPass: '',
+                user: ''
+            },
+            rules2: {
+                pass: [
+                    { required: true, validator: validatePass, trigger: 'blur' }
+                ],
+                checkPass: [
+                    { required: true, validator: validatePass2, trigger: 'blur' }
+                ],
+                user: [
+                    { required: true, message: '请输入用户名', trigger: 'blur' }
                 ]
             }
         };
     },
     methods: {
+        // 提交表单
         submitForm (formName) {
             this.$refs[formName].validate((valid) => {
-                // console.log(valid);
                 if (valid) {
                     let active = this.active;
                     this.active = active + 1;
-                }
+                };
             });
+        },
+        verifyingCode () {
+            let timeNum = 5;
+            let timer = setInterval(() => {
+                timeNum --;
+                if (timeNum <= 0) {
+                    clearInterval(timer);
+                    this.shortCode = '获取短信验证码';
+                } else {
+                    this.shortCode = `${timeNum}s秒后可重发`;
+                };
+            }, 1000);
         }
+    },
+    created () {
+        this.http.get('https://www.easy-mock.com/mock/5b39baec73a49f4fe3433dd9/xcx/form').then((result) => {
+            console.log(result);
+        });
     }
 };
 </script>
 
-<style lang="css">
+<style lang="less">
+
     .regTop {
         padding-top: 30px;
         width: 980px;
         margin: 0 auto;
         height: 55px;
         padding-bottom: 35px;
-    }
-    .regTop .logo {
-        background-image: url(https://style.org.hc360.com/images/logo/logo280x48-reg.png);
-        background-image: url(https://style.org.hc360.com/images/logo/logo280x48-reg.svg), none;
-        display: block;
-        background-repeat: no-repeat;
-        height: 48px;
-        width: 280px;
-        float: left;
+        .logo {
+            background-image: url(https://style.org.hc360.com/images/logo/logo280x48-reg.png);
+            background-image: url(https://style.org.hc360.com/images/logo/logo280x48-reg.svg), none;
+            display: block;
+            background-repeat: no-repeat;
+            height: 48px;
+            width: 280px;
+            float: left;
+        }
     }
     .regTop span {
         float: right;
@@ -168,9 +249,9 @@ export default {
     }
     .regRig {
         float: left;
-        margin-left: 143px;
-        padding-top: 15px;
-        padding-bottom: 15px;
+        /* margin-left: 143px; */
+        /* padding-top: 15px; */
+        /* padding-bottom: 15px; */
         font-size: 12px;
         color: #999;
         line-height: 20px;
@@ -179,15 +260,17 @@ export default {
         color: #0c76f4;
         font-size: 12px;
     }
-
     .register-center {
         width: 500px;
         margin: 90px auto;
     }
-    .el-form-item. .el-form-item__label:before {
+    .el-form-item .el-form-item__label:before {
         content: "*";
         color: #f56c6c;
         margin-right: 4px;
+    }
+    .valid-checkbox {
+        margin-right: 10px;
     }
     .valid-code {
         width: 120px;
@@ -206,7 +289,6 @@ export default {
     .valid-next {
         float: left;
         padding-left: 10px;
-        padding-top: 10px;
         box-sizing: border-box;
         outline: none;
     }
