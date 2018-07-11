@@ -15,6 +15,7 @@ Vue.use(http);
 
 const router = routerConfig(Router);
 Vue.config.productionTip = false;
+
 new Vue({
     el: '#app',
     router,
