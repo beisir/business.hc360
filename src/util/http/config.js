@@ -1,5 +1,5 @@
 /**
- * @author: lixiaozhang
+ * @author: caoxu
  * addRequestInterceptor
  * addResponseInterceptor
  */
@@ -19,7 +19,7 @@ const http = {
   CancelToken: axios.CancelToken // 取消网络请求
 }
 methods.forEach(method => {
-  http[method] = function () {
+  http[method] = function() {
     return axios[method](...arguments)
   }
 })

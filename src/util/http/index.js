@@ -14,6 +14,7 @@ import {
   Loading
 } from 'element-ui'
 
+export const axiosHttp = http
 
 export default {
   install(Vue) {
