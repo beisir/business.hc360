@@ -28,12 +28,14 @@ export default {
 let requestLoading;
 addRequestInterceptor(
   config => {
+    console.log('config', config);
     requestLoading = Loading.service({
       fullscreen: true
     }) // 开启加载loading
+
     return config
   }, error => {
-    // requestLoading.close()
+    requestLoading.close()
     return error
   }
 )
@@ -46,7 +48,7 @@ addResponseInterceptor(
     requestLoading.close()
     return response
   }, error => {
-    // requestLoading.close()
+    requestLoading.close()
     return error
   }
 )

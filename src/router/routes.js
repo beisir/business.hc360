@@ -1,33 +1,38 @@
+
+import index from '../view/index'; // 主页面
+
+// 首页
+const home = r => require.ensure([], () => r(require('../view/home')), 'home')
+
 export default [
     {
         name: '根目录',
         path: '/',
-        redirect: '/home',
+        redirect: '/index',
         hidden: true
     },
     {
-        name: '首页',
-        path: '/home',
+        name: 'index',
+        path: '/index',
         meta: {
             requireAuth: true
         },
-        component: resolve => {
-            require.ensure(['../view/index'], () => {
-                resolve(require('../view/index'));
-            });
-        }
+        component: index,
+        children: [ // 二级路由
+          {
+            name: 'home',
+            path: '/home',
+            component: home
+          }
+        ]
     },
     {
-        name: '注册',
+        name: 'register',
         path: '/register',
         meta: {
             requireAuth: true
         },
-        component: resolve => {
-            require.ensure(['../view/register'], () => {
-                resolve(require('../view/register'));
-            });
-        }
+        component: r => require.ensure([], () => r(require('../view/register')), 'register')
 
     }
 ];
