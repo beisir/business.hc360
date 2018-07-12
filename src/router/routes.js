@@ -2,7 +2,7 @@ export default [
     {
         name: '根目录',
         path: '/',
-        redirect: '/home',
+        redirect: '/signIn',
         hidden: true
     },
     {
@@ -29,5 +29,17 @@ export default [
             });
         }
 
+    },
+    {
+        name: '登录',
+        path: '/signIn',
+        meta: {
+            requireAuth: true
+        },
+        component: resolve => {
+            require.ensure(['../view/signIn'], () => {
+                resolve(require('../view/signIn'));
+            });
+        }
     }
 ];
