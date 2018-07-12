@@ -21,8 +21,15 @@ Vue.use(Button);
 Vue.use(ButtonGroup);
 Vue.use(Checkbox);
 Vue.use(CheckboxGroup);
-const router = routerConfig(Router);
 
+import Iview from 'iview';
+import 'iview/dist/styles/iview.css';
+
+Vue.use(Iview);
+// Vue.use(Form);
+// Vue.use(FormItem);
+
+const router = routerConfig(Router);
 Vue.config.productionTip = false;
 new Vue({
     el: '#app',

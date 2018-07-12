@@ -14,7 +14,7 @@ const defaultHeaders = {
 // 设置超时时间
 axios.defaults.timeout = 20 * 1000
 const methods = ['get', 'post', 'put', 'delete']
-
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 const http = {
   CancelToken: axios.CancelToken // 取消网络请求
 }
