@@ -46,7 +46,7 @@ addRequestInterceptor(
 addResponseInterceptor(
   response => {
     requestLoading.close()
-    return response
+    return response.data
   }, error => {
     requestLoading.close()
     return error
