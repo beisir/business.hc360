@@ -14,21 +14,15 @@ const defaultHeaders = {
 
 // 设置超时时间
 axios.defaults.timeout = 20 * 1000
-<<<<<<< HEAD
 // post请求头
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 // 全局请求头
 axios.defaults.baseURL = 'http://newmyweb.hc360.com'
-
 // 允许请求携带cookie
 axios.defaults.withCredentials = true
 
 const methods = ['get', 'post', 'put', 'delete'];
 
-=======
-const methods = ['get', 'post', 'put', 'delete']
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
->>>>>>> origin/master
 const http = {
   CancelToken: axios.CancelToken.source() // 取消网络请求
 }
