@@ -34,5 +34,17 @@ export default [
         },
         component: r => require.ensure([], () => r(require('../view/register')), 'register')
 
+    },
+    {
+        name: '登录',
+        path: '/signIn',
+        meta: {
+            requireAuth: true
+        },
+        component: resolve => {
+            require.ensure(['../view/signIn'], () => {
+                resolve(require('../view/signIn'));
+            });
+        }
     }
 ];

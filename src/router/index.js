@@ -1,6 +1,7 @@
 
 import routes from './routes';
 import VueRouter from 'vue-router'
+import { axiosHttp } from '@/util/http'
 
 const router = new VueRouter({
   mode: 'history',
@@ -15,6 +16,11 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // console.log('to', to)
   // console.log('from', from)
+
+  // 是否有权限
+  // axiosHttp.get('/login/isLogin').then(res => {
+  //   console.log(res);
+  // })
   next()
 })
 
