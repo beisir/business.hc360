@@ -3,6 +3,8 @@ import Router from 'vue-router';
 import http from '@/util/http'
 import App from './App';
 import router from './router';
+import es6Promise from 'es6-promise';
+es6Promise.polyfill();
 import {Menu, Submenu, MenuItem, Steps, Step, Input, Form, Button, ButtonGroup, FormItem, Checkbox, CheckboxGroup} from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 // import '../theme/index.css';

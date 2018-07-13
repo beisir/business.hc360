@@ -31,7 +31,7 @@
                     </el-form-item>
                     <el-form-item label="短信验证码" prop="message">
                         <el-input class="valid-messcode" v-model="ruleForm.message" type="text"></el-input>
-                        <el-button class="valid-message" type="info" :disabled="(!shortStatus && !phoneStatus) && (shortCode === '获取短信验证码')" @click="verifyingCode">{{shortCode}}</el-button>
+                        <el-button class="valid-message" type="info" :disabled="formStatus" @click="verifyingCode">{{shortCode}}</el-button>
                     </el-form-item>
                     <el-form-item label="确认阅读并接受" prop="type">
                         <div class="regRig">
@@ -121,8 +121,8 @@ export default {
         return {
             refresCode: '',
             shortCode: '获取短信验证码',
-            shortStatus: false,
-            phoneStatus: false,
+            shortStatus: true,
+            phoneStatus: true,
             active: 1,
             checked: false,
             ruleForm: {
@@ -133,18 +133,10 @@ export default {
             },
             rules: {
                 phone: [
-                    { required: true, message: '请输入手机号码', trigger: 'blur' },
-                    {
-                        message: '手机号码格式不正确',
-                        trigger: 'blur',
-                        pattern: /^[1][3,4,5,7,8][0-9]{9}$/,
-
-                    },
-                    { validator: validatePhone, trigger: 'blur' },
+                    { validator: validatePhone, trigger: 'blur' }
                 ],
                 valid: [
-                    { required: true, message: '请输入图中结果', trigger: 'blur' },
-                    { validator: validCode, trigger: 'blur' },
+                    { validator: validCode, trigger: 'blur' }
                 ],
                 message: [
                     { required: true, message: '请输入手机验证码', trigger: 'blur' },
@@ -179,6 +171,17 @@ export default {
             }
         };
     },
+    computed: {
+        formStatus () {
+            let status;
+            if (!this.phoneStatus) {
+                if (!this.shortStatus) {
+                    return false;
+                }
+            };
+            return true;
+        }
+    },
     methods: {
         // 提交表单
         submitForm (formName) {
@@ -199,9 +202,14 @@ export default {
                     result = await this.http.get('//newmyweb.hc360.com/user/regphone?phone=' + phone)
                     break;
                 case 2:
-                    let ruleForm2 = this.ruleForm2;
+                    let ruleForm2 = this.ruleForm2,
+                        ruleForm = this.ruleForm;
                     result = await this.http.get('//newmyweb.hc360.com/user/register', {
-                        params: ruleForm2
+                        params: {
+                            pwd: ruleForm2.pwd,
+                            username: ruleForm2.username,
+                            phone: ruleForm.phone
+                        }
                     });
                     break;
             };
@@ -217,14 +225,19 @@ export default {
             this.refresCode = await this.http.get('//newmyweb.hc360.com/validCode/refresCode');
         },
         verifyingCode () {
-            let timeNum = 5;
+            let timeNum = 5,
+                timer;
             this.getSMS();
-            let timer = setInterval(() => {
+            clearInterval(timer);
+            this.phoneStatus = true;
+            timer = setInterval(() => {
                 timeNum --;
                 if (timeNum <= 0) {
                     clearInterval(timer);
                     this.shortCode = '获取短信验证码';
+                    this.phoneStatus = false;
                 } else {
+                    console.log(this.formStatus);
                     this.shortCode = `${timeNum}s秒后可重发`;
                 };
             }, 1000);

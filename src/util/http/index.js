@@ -28,7 +28,7 @@ export default {
 let requestLoading;
 addRequestInterceptor(
   config => {
-    console.log('config', config);
+    // console.log('config', config);
     requestLoading = Loading.service({
       fullscreen: true
     }) // 开启加载loading

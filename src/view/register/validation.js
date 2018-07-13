@@ -21,29 +21,44 @@ export default (_this) => {
             };
         },
         validatePhone: async (rule, value, callback) => {
-            if (value) {
-                try {
-                    let res = await _this.http.get('//newmyweb.hc360.com/user/checkphone?phone=' + value)
-                    res.success ? callback() : callback(new Error('手机号码验证失败'));
-                    _this.phoneStatus = res.success;
-                } catch (e) {
-                    callback(new Error('获取手机号失败'));
+            if (value.trim()) {
+                let reg = /^[1][3,4,5,7,8][0-9]{9}$/;
+                if (reg.test(value)) {
+                    try {
+                        let res = await _this.http.get('//newmyweb.hc360.com/user/checkphone?phone=' + value)
+                        res.success ? callback() : callback(new Error(res.returnMsg));
+                        _this.phoneStatus = !res.success;
+                    } catch (e) {
+                        callback(new Error('获取手机号失败'));
+                        _this.phoneStatus = true;
+                    };
+                } else {
                     _this.phoneStatus = true;
+                    callback(new Error('手机号码格式不正确'));
                 };
             } else {
-                callback(new Error('err'));
+                callback(new Error('请输入手机号'));
                 _this.phoneStatus = true;
             }
         },
         validCode: async (rule, value, callback) => {
-            try {
-                let res = await _this.http.get('//newmyweb.hc360.com/validCode/checkValidCode/' + value);
-                res.success ? callback() : callback(new Error('图形验证码错误'));
-                _this.shortStatus = res.success;
-            } catch (e) {
-                callback('失败')
-                _this.shortStatus = false;
-            };
+            if (value.trim()) {
+                try {
+                    let res = await _this.http.get('//newmyweb.hc360.com/validCode/checkValidCode/' + value);
+                    res.success ? callback() : callback(new Error('图形验证码错误'));
+                    if (!_this.phoneStatus) {
+                        _this.shortStatus = !res.success;
+                    } else {
+                        _this.shortStatus = true;
+                    };
+                } catch (e) {
+                    callback('获取图形验证码失败');
+                    _this.shortStatus = true;
+                };
+            } else {
+                callback('请输入图中结果');
+                _this.shortStatus = true;
+            }
         },
         validMessage: async (rule, value, callback) => {
             let phone = _this.ruleForm.phone;
