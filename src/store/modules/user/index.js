@@ -19,7 +19,7 @@ export default {
   actions: {
     // TODO: 这里可以获取用户信息
     async [GETUSERINFO]({commit, state, rootState}, opts) {
-      let result = await axiosHttp.get('../../../static/json/a.json')
+      let result = await axiosHttp.post('../../../static/json/a.json')
       commit(SETUSERINFO, result.data)
     }
   }

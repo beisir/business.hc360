@@ -14,26 +14,22 @@ const defaultHeaders = {
 
 // 设置超时时间
 axios.defaults.timeout = 20 * 1000
-const methods = ['get', 'post', 'put', 'delete']
+// post请求头
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+// 全局请求头
+axios.defaults.baseURL = 'http://newmyweb.hc360.com'
+
+// 允许请求携带cookie
+axios.defaults.withCredentials = true
+
+const methods = ['get', 'post', 'put', 'delete'];
 
 const http = {
-  CancelToken: axios.CancelToken // 取消网络请求
+  CancelToken: axios.CancelToken.source() // 取消网络请求
 }
 methods.forEach(method => {
   http[method] = function() {
-    // 如果是post请求
-    let arg = arguments
-    if (method === 'post') {
-      if (!arguments[1]) {
-        arg = [...arg, {}]
-      }
-      return axios[method](...arg, {
-        headers: {
-          'content-type' : 'application/x-www-form-urlencoded;charset=utf-8;'
-        }
-      })
-    }
-    return axios[method](...arg)
+    return axios[method](...arguments)
   }
 })
 

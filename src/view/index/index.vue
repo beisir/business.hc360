@@ -12,26 +12,6 @@
           <el-menu-item index="2-4-3">选项3</el-menu-item>
         </el-submenu> -->
       </el-submenu>
-
-
-
-      <el-menu-item index="home">首页</el-menu-item>
-      <el-submenu index="2">
-        <template slot="title">内容管理</template>
-        <el-menu-item index="2-1">选项1</el-menu-item>
-        <el-menu-item index="2-2">选项2</el-menu-item>
-        <el-menu-item index="2-3">选项3</el-menu-item>
-        <el-submenu index="2-4">
-          <template slot="title">选项4</template>
-          <el-menu-item index="2-4-1">选项1</el-menu-item>
-          <el-menu-item index="2-4-2">选项2</el-menu-item>
-          <el-menu-item index="2-4-3">选项3</el-menu-item>
-        </el-submenu>
-      </el-submenu>
-      <el-menu-item index="register">内容管理</el-menu-item>
-      <el-menu-item index="4">网络营销</el-menu-item>
-      <el-menu-item index="5">网站设置</el-menu-item>
-      <el-menu-item index="5">插件市场</el-menu-item>
     </el-menu>
     <transition name="fade">
       <router-view></router-view>
@@ -77,7 +57,7 @@ export default {
     }
   },
   created() {
-    this.getUserInfo()
+    this.getUserInfo({a:1})
   },
   computed: {
     ...mapState('user', {
@@ -89,7 +69,7 @@ export default {
       console.log(key, keyPath);
     },
     ...mapActions('user', {
-      getUserInfo: GETUSERINFO
+      getUserInfo: (commit, opts) => commit(GETUSERINFO, opts)
     })
   }
 };
