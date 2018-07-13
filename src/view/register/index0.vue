@@ -3,30 +3,39 @@
         <div class="regTop">
             <a href="https://www.hc360.com" target="_blank" class="logo"></a> <span>我是会员，点此<a href="https://sso.hc360.com/ssologin">登录</a></span>
         </div>
-        <div class="step">
-            <el-steps :active="active" simple>
-                <el-step title="验证手机" icon="el-icon-phone"></el-step>
-                <el-step title="填写账号信息" icon="el-icon-edit"></el-step>
-                <el-step title="注册成功" icon="el-icon-circle-check"></el-step>
+        <div class="regTop">
+            <el-steps :active="active">
+                <el-step title="验证手机"></el-step>
+                <el-step title="填写账号信息"></el-step>
+                <el-step title="注册成功"></el-step>
             </el-steps>
-        </div>
 
+            <Steps :current="active">
+                <Step title="已完成" content="验证手机"></Step>
+                <Step title="进行中" content="填写账号信息"></Step>
+                <Step title="待进行" content="注册成功"></Step>
+            </Steps>
+
+        </div>
         <div class="" v-if="active === 1">
             <div class="register-center transition-box">
-                <el-form
+                <Form
                     :status-icon="true"
                     ref="ruleForm"
                     label-position="right"
                     :model="ruleForm"
                     :rules="rules"
                     :validate-on-rule-change="false"
-                    label-width="130px">
-                    <el-form-item label="手机号码" prop="phone">
+                    label-width="130">
+                    <!-- <el-form-item label="手机号码" prop="phone">
                         <el-input v-model="ruleForm.phone"></el-input>
-                    </el-form-item>
-                    <el-form-item label="验证码" prop="valid">
+                    </el-form-item> -->
+                    <FormItem label="手机号码" prop="phone">
+                        <Input v-model="ruleForm.phone"></Input>
+                    </FormItem>
+                    <!-- <el-form-item label="验证码" prop="valid">
                         <el-input class="valid-code" v-model="ruleForm.valid"></el-input>
-                        <div class="valid-img"><img :src="'//newmyweb.hc360.com/validCode/validimage?valid=' + refresCode" /></div>
+                        <div class="valid-img"><img :src="'http://10.158.33.230/validCode/validimage?valid=' + refresCode" /></div>
                         <a class="valid-next" href="javascript:;" @click="reflshImg">看不清楚，换一张</a>
                     </el-form-item>
                     <el-form-item label="短信验证码" prop="message">
@@ -47,9 +56,9 @@
                             </el-checkbox-group>
 
                         </div>
-                    </el-form-item>
-                </el-form>
-                <el-button class="valid-success" type="danger" @click="submitForm('ruleForm')">下一步</el-button>
+                    </el-form-item> -->
+                </Form>
+                <el-button class="valid-success" type="primary" @click="submitForm('ruleForm')">下一步</el-button>
             </div>
         </div>
         <div class="" v-else-if="active === 2">
@@ -70,21 +79,21 @@
                     <el-form-item label="确认密码" prop="pwd">
                         <el-input type="password" v-model="ruleForm2.pwd"></el-input>
                     </el-form-item>
-                    <el-button class="valid-success" type="danger" @click="submitForm('ruleForm2')">下一步</el-button>
+                    <el-button class="valid-success" type="primary" @click="submitForm('ruleForm2')">下一步</el-button>
                 </el-form>
             </div>
         </div>
-        <div class="" v-else-if="active === 3">
+        <!-- <div class="" v-else-if="active === 3">
             <div class="register-center" style="text-align: center;">
                 <div class="open-icon">
                     <i class="el-icon-success"></i>
                 </div>
                 <p class="open-text">恭喜您，已经成功注册慧聪网</p>
-                <el-button class="open-button" type="danger" >
+                <el-button class="open-button" type="primary" >
                     <router-link to="/home">进入会员中心</router-link>
                 </el-button>
             </div>
-        </div>
+        </div> -->
         <div class="regBottom">
             <ul class="regBottom-inner">
                 <li>
@@ -117,7 +126,7 @@
 import validtion from './validation.js';
 export default {
     data () {
-        let {validatePass, validatePass2, validatePhone, validCode, validMessage, validateUsername} = validtion(this);
+        let {validatePass, validatePass2, validatePhone, validCode, validMessage} = validtion(this);
         return {
             refresCode: '',
             shortCode: '获取短信验证码',
@@ -168,13 +177,7 @@ export default {
                     { required: true, validator: validatePass2, trigger: 'blur' }
                 ],
                 username: [
-                    { required: true, message: '请输入用户名', trigger: 'blur' },
-                    {
-                        pattern: /^[a-z0-9]{4,16}$/,
-                        message: '只能输入4-16位小写字母和数字',
-                        trigger: 'blur'
-                    },
-                    { required: true, validator: validateUsername, trigger: 'blur' }
+                    { required: true, message: '请输入用户名', trigger: 'blur' }
                 ]
             }
         };
@@ -196,25 +199,30 @@ export default {
             switch (active) {
                 case 1:
                     let phone = this.ruleForm.phone;
-                    result = await this.http.get('//newmyweb.hc360.com/user/regphone?phone=' + phone)
+                    result = await this.http.get('http://10.158.33.188:81/user/regphone?phone=' + phone)
                     break;
                 case 2:
                     let ruleForm2 = this.ruleForm2;
-                    result = await this.http.get('//newmyweb.hc360.com/user/register', {
-                        params: ruleForm2
-                    });
+                        result = await this.http.post('http://10.158.33.188:81/user/register', {
+                            userInfo: JSON.stringify(ruleForm2)
+                        }, {
+                            headers: {
+                                'Content-type': 'application/x-www-form-urlencoded',
+                            }
+                        });
                     break;
             };
+            console.log(result);
             if (result.success) {
                 this.active = active + 1;
             };
         },
         async getSMS () {
-            this.sendSms = await this.http.get('//newmyweb.hc360.com/user/sendSms?phone='+ this.ruleForm.phone);
+            this.sendSms = await this.http.get('http://10.158.33.188:81/user/sendSms?phone='+ this.ruleForm.phone);
             console.log(this.sendSms);
         },
         async reflshImg () {
-            this.refresCode = await this.http.get('//newmyweb.hc360.com/validCode/refresCode');
+            this.refresCode = await this.http.get('http://10.158.33.230/validCode/refresCode');
         },
         verifyingCode () {
             let timeNum = 5;
@@ -233,12 +241,12 @@ export default {
     async created () {
         try {
             this.reflshImg();
-            // this.imgurl = await this.http.get('newmyweb.hc360.com/validCode/validimage');
+            // this.imgurl = await this.http.get('http://10.158.33.230/validCode/validimage');
             // console.log(this.imgurl);
         } catch (e) {
             console.log(e);
         };
-        // this.http.get('newmyweb.hc360.com/validCode/refresCode').then(res => {
+        // this.http.get('http://10.158.33.230/validCode/refresCode').then(res => {
         //     console.log(res);
         // })
 
@@ -262,7 +270,7 @@ export default {
         width: 980px;
         margin: 0 auto;
         height: 55px;
-        padding-bottom: 70px;
+        padding-bottom: 35px;
         .logo {
             background-image: url(https://style.org.hc360.com/images/logo/logo280x48-reg.png);
             background-image: url(https://style.org.hc360.com/images/logo/logo280x48-reg.svg), none;
@@ -273,13 +281,13 @@ export default {
             float: left;
         }
     }
-    .regTop span {
-        float: right;
-        font-size: 14px;
-        color: #333;
-        padding-top: 10px;
-        line-height: 20px;
-    }
+    // .regTop span {
+    //     float: right;
+    //     font-size: 14px;
+    //     color: #333;
+    //     padding-top: 10px;
+    //     line-height: 20px;
+    // }
     .regTop span a {
         color: #0055aa;
         text-decoration: none;
@@ -297,12 +305,6 @@ export default {
     .regRig a {
         color: #0c76f4;
         font-size: 12px;
-    }
-    .step {
-        padding-top: 30px;
-        width: 980px;
-        margin: 0 auto;
-        height: 55px;
     }
     .register-center {
         width: 500px;
@@ -339,11 +341,6 @@ export default {
     .valid-success {
         width: 370px;
         margin-left: 130px;
-        background-color: #db2e3b;
-        // color: #fff;
-    }
-    .el-steps--simple {
-        // background-color: #db2e3b;
     }
     .valid-messcode {
         width: 220px
@@ -362,11 +359,7 @@ export default {
         line-height: 120px;
     }
     .open-button {
-        width: 370px;
-        background-color: #db2e3b;
-        a {
-            color: #fff;
-        }
+        width: 370px
     }
 
     .regBottom {

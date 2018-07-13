@@ -23,8 +23,6 @@ Vue.use(ButtonGroup);
 Vue.use(Checkbox);
 Vue.use(CheckboxGroup);
 
-// const router = routerConfig(Router);
-
 Vue.config.productionTip = false;
 new Vue({
     el: '#app',
